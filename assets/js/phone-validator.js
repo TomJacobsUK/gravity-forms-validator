@@ -15,7 +15,7 @@
         if (typeof gform !== 'undefined' && gform.hooks) {
             gform.addFilter('gform_is_value_valid', function(isValid, value, form, field) {
                 // Only apply to phone fields with international format
-                if (field.type === 'phone' && field.phoneFormat === 'international') {
+                if (field.type === 'phone' && field.phoneFormat === 'international-selector') {
                     // Get the phone input instance
                     var phoneInputInstance = window['phoneInput_' + form.id + '_' + field.id];
                     
@@ -33,7 +33,7 @@
                 // Look for phone fields with errors
                 for (var i = 0; i < form.fields.length; i++) {
                     var field = form.fields[i];
-                    if (field.type === 'phone' && field.phoneFormat === 'international' && !field.isValid) {
+                    if (field.type === 'phone' && field.phoneFormat === 'international-selector' && !field.isValid) {
                         // Add custom error message
                         message += '<li>Please enter a valid international phone number with country code.</li>';
                         break;

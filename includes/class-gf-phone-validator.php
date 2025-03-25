@@ -72,23 +72,39 @@ class GF_Phone_Validator {
     public function register_intl_phone_init($form) {
         // Get all phone fields in the form
         $phone_fields = array();
+        $default_country_code = 'gb'; // Default country code if no address field is found
+        $preferred_countries = array('gb'); // Default preferred countries
+
         foreach ($form['fields'] as $field) {
             if ($field->type === 'phone' && !empty($field->phoneFormat) && $field->phoneFormat === 'international-selector') {
                 $phone_fields[] = $field->id;
             }
+            // Check for address field with default country
+            if ($field instanceof GF_Field_Address) {
+                $type = empty($field->addressType) ? $field->get_default_address_type($field->formId) : $field->addressType;
+                $type_config = rgar($field->get_address_types($field->formId), $type);
+                if (!empty($type_config)) {
+                    $country_code = $field->get_country_code(rgar($type_config, 'country', $field->defaultCountry));
+                    if (!empty($country_code)) {
+                        $default_country_code = strtolower($country_code);
+                        $preferred_countries = array($default_country_code);
+                    }
+                }
+            }
         }
-        
+
         if (empty($phone_fields)) {
             return;
         }
-        
+
         $script = 'jQuery(document).ready(function($) {';
-        
+
         foreach ($phone_fields as $field_id) {
             $script .= '
                 var phoneInput_' . $field_id . ' = window.intlTelInput(document.querySelector("#input_' . $form['id'] . '_' . $field_id . '"), {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-                    preferredCountries: ["us", "gb"],
+                    initialCountry: "' . $default_country_code . '",
+                    preferredCountries: ["' . implode('","', $preferred_countries) . '"],
                     separateDialCode: true,
                     formatOnDisplay: true,
                     hiddenInput: "full_phone"
@@ -116,9 +132,9 @@ class GF_Phone_Validator {
                 });
             ';
         }
-        
+
         $script .= '});';
-        
+
         GFFormDisplay::add_init_script($form['id'], 'intl_phone_fields', GFFormDisplay::ON_PAGE_RENDER, $script);
     }
     
