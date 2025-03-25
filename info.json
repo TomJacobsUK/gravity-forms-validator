@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
-    "description": "",
-    "changelog": "### 1.0.0\n- Initial release."
+    "version": "1.0.1",
+    "description": "A plugin to extend and improve Gravity Forms validation, including support for international phone number validation.",
+    "changelog": "### 1.0.1\n- Update phone validator to support international-selector format and dynamic country code initialization.\n\n### 1.0.0\n- Initial release."
 }

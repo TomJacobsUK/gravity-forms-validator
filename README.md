@@ -26,5 +26,8 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Changelog
 
+### 1.0.1
+- Update phone validator to support international-selector format and dynamic country code initialization.
+
 ### 1.0.0
 - Initial release.
