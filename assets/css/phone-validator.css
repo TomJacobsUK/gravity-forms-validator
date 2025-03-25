@@ -1,0 +1,41 @@
+/**
+ * Gravity Forms Phone Validator Styles
+ */
+
+/* Adjust the margins and spacing for the international phone input */
+.ginput_container_phone .iti {
+    width: 100%;
+    display: block;
+}
+
+/* Style the flag dropdown button */
+.ginput_container_phone .iti__flag-container {
+    border-radius: 3px 0 0 3px;
+}
+
+/* Style the error and valid states */
+.ginput_container_phone input.phone-error {
+    border-color: #d63637 !important;
+}
+
+.ginput_container_phone input.phone-valid {
+    border-color: #46b450 !important;
+}
+
+/* Fix any alignment issues */
+.ginput_container_phone .iti__selected-flag {
+    padding: 0 6px 0 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Make sure the field doesn't overflow containers */
+.ginput_container_phone .iti--separate-dial-code .iti__selected-flag {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Add some basic styling to ensure compatibility with most themes */
+.gform_wrapper .ginput_container_phone input {
+    padding-left: 90px !important;
+}
