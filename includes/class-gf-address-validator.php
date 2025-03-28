@@ -8,11 +8,10 @@ class GF_Address_Validator {
     // Array of country code => postcode regex patterns
     private $postcode_patterns = array(
         'US' => '/^\d{5}(-\d{4})?$/', // US ZIP codes: 12345 or 12345-6789
-        'UK' => '/^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i', // UK postcodes
-        'GB' => '/^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i', // UK postcodes
+        'GB' => '/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z])))) [0-9][A-Za-z]{2})$/i', // UK postcodes including GIR 0AA
         'CA' => '/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i', // Canadian postcodes
         'AU' => '/^\d{4}$/', // Australian postcodes
-        'FI' => '/^\d{5}$/', // Finnish postcodes: 5 digits
+        'FI' => '/^\d{5}$/', // Finnish vvvvvvvvvvvvpostcodes: 5 digits
         'HU' => '/^\d{4}$/', // Hungarian postcodes: 4 digits
     );
 

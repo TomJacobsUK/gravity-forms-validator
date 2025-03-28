@@ -1,0 +1,14 @@
+{
+    "name": "tom/gravity-forms-validator",
+    "description": "WordPress plugin for advanced validation of Gravity Forms",
+    "type": "wordpress-plugin",
+    "require": {
+        "brick/phonenumber": "^0.5.0",
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "GravityFormsValidator\\": "includes/"
+        }
+    }
+}
