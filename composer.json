@@ -1,7 +1,7 @@
 {
     "name": "tom/gravity-forms-validator",
     "description": "WordPress plugin for advanced validation of Gravity Forms",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "type": "wordpress-plugin",
     "require": {
         "brick/phonenumber": "^0.5.0",
