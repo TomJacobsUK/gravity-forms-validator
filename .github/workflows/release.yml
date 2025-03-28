@@ -53,8 +53,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            gravity-forms-validator-${{ github.ref_name }}.zip
-            gravity-forms-validator-${{ github.ref_name }}-with-dependencies.zip
+            gravity-forms-validator-*.zip
           draft: false
           prerelease: false
           generate_release_notes: true
