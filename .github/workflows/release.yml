@@ -36,8 +36,18 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           ZIP_NAME="${PLUGIN_NAME}-${VERSION}-with-dependencies.zip"
           
-          # Create zip including vendor directory
-          zip -r $ZIP_NAME . -x "*.git*" -x "*.github*" -x "*.gitignore" -x "*.vscode*" -x "*.idea*"
+          # Create a temporary directory with the correct plugin name
+          mkdir -p /tmp/${PLUGIN_NAME}
+          
+          # Copy all files to the temporary directory, excluding unwanted files
+          rsync -a --exclude=".git" --exclude=".github" --exclude=".gitignore" \
+                   --exclude=".vscode" --exclude=".idea" --exclude="*.zip" \
+                   . /tmp/${PLUGIN_NAME}/
+          
+          # Create zip from the temporary directory
+          cd /tmp
+          zip -r $GITHUB_WORKSPACE/$ZIP_NAME ${PLUGIN_NAME}
+          cd $GITHUB_WORKSPACE
       
       - name: Create standard plugin package (without vendor)
         run: |
@@ -45,8 +55,21 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           ZIP_NAME="${PLUGIN_NAME}-${VERSION}.zip"
           
-          # Create zip excluding vendor directory
-          zip -r $ZIP_NAME . -x "vendor/*" -x "*.git*" -x "*.github*" -x "*.gitignore" -x "*.vscode*" -x "*.idea*"
+          # Create a temporary directory with the correct plugin name
+          mkdir -p /tmp/${PLUGIN_NAME}-no-vendor
+          
+          # Copy all files to the temporary directory, excluding unwanted files
+          rsync -a --exclude=".git" --exclude=".github" --exclude=".gitignore" \
+                   --exclude=".vscode" --exclude=".idea" --exclude="*.zip" \
+                   --exclude="vendor" \
+                   . /tmp/${PLUGIN_NAME}-no-vendor/
+          
+          # Create zip from the temporary directory with the correct folder name
+          cd /tmp
+          mkdir -p ${PLUGIN_NAME}
+          cp -r ${PLUGIN_NAME}-no-vendor/* ${PLUGIN_NAME}/
+          zip -r $GITHUB_WORKSPACE/$ZIP_NAME ${PLUGIN_NAME}
+          cd $GITHUB_WORKSPACE
       
       - name: Create Release
         id: create_release
