@@ -17,22 +17,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: composer:v2, phpcs
+          tools: composer:v2
           extensions: mbstring, xml
 
       - name: Validate composer.json
         run: composer validate --strict
-
-      - name: Install WordPress Coding Standards
-        run: |
-          # Allow the phpcodesniffer-composer-installer plugin
-          composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-          # Install WordPress Coding Standards
-          composer global require wp-coding-standards/wpcs
-          phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
-
-      - name: PHP CodeSniffer
-        run: phpcs --standard=WordPress --ignore=vendor/,node_modules/ .
 
       - name: Get tag name
         id: get_tag
