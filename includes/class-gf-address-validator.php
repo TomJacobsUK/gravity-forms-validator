@@ -78,8 +78,6 @@ class GF_Address_Validator {
         if (!($field instanceof GF_Field_Address)) {
             return $result;
         }
-
-        $result['is_valid'] = false;
         
         // Get the postcode value
         $postcode = rgpost('input_' . str_replace('.', '_', $field->id . '.5'));
