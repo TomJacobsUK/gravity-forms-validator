@@ -23,6 +23,11 @@ jobs:
       - name: Validate composer.json
         run: composer validate --strict
 
+      - name: Install WordPress Coding Standards
+        run: |
+          composer global require wp-coding-standards/wpcs
+          phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+
       - name: PHP CodeSniffer
         run: phpcs --standard=WordPress --ignore=vendor/,node_modules/ .
 
