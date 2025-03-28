@@ -1,0 +1,65 @@
+name: Create Release with Dependencies
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v2, phpcs
+          extensions: mbstring, xml
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: PHP CodeSniffer
+        run: phpcs --standard=WordPress --ignore=vendor/,node_modules/ .
+
+      - name: Get tag name
+        id: get_tag
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Create plugin package with dependencies
+        run: |
+          PLUGIN_NAME="gravity-forms-validator"
+          VERSION=${GITHUB_REF#refs/tags/v}
+          ZIP_NAME="${PLUGIN_NAME}-${VERSION}-with-dependencies.zip"
+          
+          # Create zip including vendor directory
+          zip -r $ZIP_NAME . -x "*.git*" -x "*.github*" -x "*.gitignore" -x "*.vscode*" -x "*.idea*"
+      
+      - name: Create standard plugin package (without vendor)
+        run: |
+          PLUGIN_NAME="gravity-forms-validator"
+          VERSION=${GITHUB_REF#refs/tags/v}
+          ZIP_NAME="${PLUGIN_NAME}-${VERSION}.zip"
+          
+          # Create zip excluding vendor directory
+          zip -r $ZIP_NAME . -x "vendor/*" -x "*.git*" -x "*.github*" -x "*.gitignore" -x "*.vscode*" -x "*.idea*"
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            gravity-forms-validator-${{ github.ref_name }}.zip
+            gravity-forms-validator-${{ github.ref_name }}-with-dependencies.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

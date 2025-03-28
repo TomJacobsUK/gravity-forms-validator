@@ -2,6 +2,11 @@
 /**
  * Phone validator class for Gravity Forms
  */
+
+use Brick\PhoneNumber\PhoneNumber;
+use Brick\PhoneNumber\PhoneNumberParseException;
+use Brick\PhoneNumber\PhoneNumberFormat;
+
 class GF_Phone_Validator {
     /**
      * Initialize the validator
@@ -34,15 +39,15 @@ class GF_Phone_Validator {
         $phone_formats['uk'] = array(
             'label'       => 'UK',
             'mask'        => false,
-            'regex'       => '/^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/',
-            'instruction' => false,
+            'regex'       => false, // We'll use Brick\PhoneNumber instead of regex
+            'instruction' => 'Please enter a valid UK phone number',
         );
         
         // Add universal international format
         $phone_formats['international-selector'] = array(
             'label'       => 'International (with country code)',
             'mask'        => false,
-            'regex'       => '/^\+[1-9]\d{1,14}$/', // E.164 format
+            'regex'       => false, // We'll use Brick\PhoneNumber instead of regex
             'instruction' => 'Please enter a valid international phone number with country code',
         );
     
@@ -158,7 +163,7 @@ class GF_Phone_Validator {
     }
 
     /**
-     * Validate phone field server-side
+     * Validate phone field server-side using Brick\PhoneNumber library
      * 
      * @param array $result The validation result
      * @param mixed $value The field value
@@ -167,15 +172,74 @@ class GF_Phone_Validator {
      * @return array The modified validation result
      */
     public function validate_phone_field($result, $value, $form, $field) {
-        // Only validate international format phone fields
-        if ($field->type === 'phone' && !empty($field->phoneFormat) && $field->phoneFormat === 'international-selector') {
-            // Basic server-side validation for E.164 format
-            if (!empty($value) && !preg_match('/^\+[1-9]\d{1,14}$/', $value)) {
-                $result['is_valid'] = false;
-                $result['message'] = 'Please enter a valid international phone number with country code.';
+        // Only validate phone fields that aren't empty
+        if ($field->type !== 'phone' || empty($value)) {
+            return $result;
+        }
+
+        // Default result is valid
+        $result['is_valid'] = true;
+        
+        try {
+            // Get country code from form or field settings, default to UK if not provided
+            $default_country = 'GB';
+            
+            // For international format, we already have the country code in the number
+            if (!empty($field->phoneFormat) && $field->phoneFormat === 'international-selector') {
+                // For E.164 format, no region code needed as it's included in the number
+                $phoneNumber = PhoneNumber::parse($value);
+            } else {
+                // For other formats, try to determine country from form or use default
+                $country_code = $this->get_country_code_from_form($form, $default_country);
+                $phoneNumber = PhoneNumber::parse($value, $country_code);
             }
+            
+            // Check if the number is valid
+            if (!$phoneNumber->isValidNumber()) {
+                $result['is_valid'] = false;
+                $result['message'] = __('Please enter a valid phone number.', 'gravity-forms-validator');
+            }
+            
+            // If valid, normalize the phone number to E.164 format and save it back
+            if ($result['is_valid']) {
+                $_POST['input_' . $field->id] = $phoneNumber->format(PhoneNumberFormat::E164);
+            }
+        } catch (PhoneNumberParseException $e) {
+            $result['is_valid'] = false;
+            $result['message'] = __('Please enter a valid phone number with correct country code.', 'gravity-forms-validator');
         }
         
         return $result;
+    }
+    
+    /**
+     * Helper method to determine country code from form
+     * 
+     * @param array $form The form object
+     * @param string $default_country The default country code
+     * @return string The two-letter country code
+     */
+    private function get_country_code_from_form($form, $default_country = 'GB') {
+        // Try to determine country from address fields in the form
+        if (!empty($form['fields'])) {
+            foreach ($form['fields'] as $field) {
+                if ($field->type === 'address' && !empty($field->inputs)) {
+                    // Find the country input
+                    foreach ($field->inputs as $input) {
+                        if (strpos($input['id'], '.6') !== false) { // Country is usually the 6th input
+                            $country_input_id = $input['id'];
+                            $country_value = rgpost('input_' . str_replace('.', '_', $country_input_id));
+                            
+                            if (!empty($country_value)) {
+                                return $country_value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Allow filtering the default country
+        return apply_filters('gf_validator_phone_default_country', $default_country, $form);
     }
 }

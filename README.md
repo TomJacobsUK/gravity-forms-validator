@@ -1,33 +1,67 @@
 # Gravity Forms Validator
 
-This plugin extends and improves the validation capabilities of Gravity Forms.
+A WordPress plugin that extends Gravity Forms with advanced validation capabilities including international phone number validation using the Brick\PhoneNumber library.
+
+## Features
+
+- Advanced phone number validation for international numbers
+- Country code detection and validation
+- International phone input with flags and country code selector
+- Address validation
 
 ## Installation
 
-1. Download the plugin files.
-2. Upload the `gravity-forms-validator` folder to the `/wp-content/plugins/` directory.
-3. Activate the plugin through the 'Plugins' menu in WordPress.
+### Option 1: Standard Installation (With Dependencies Included)
 
-## Usage
+1. Download the latest release ZIP file with "with-dependencies" in the name from the [GitHub Releases page](https://github.com/TomJacobsUK/gravity-forms-validator/releases)
+2. In your WordPress admin panel, go to Plugins → Add New
+3. Click the "Upload Plugin" button at the top of the page
+4. Upload the ZIP file
+5. Activate the plugin
 
-Once activated, the plugin will automatically enhance the validation process of Gravity Forms. You can add custom validation rules by extending the `GF_Validator` class in the `includes/class-gf-validator.php` file.
+### Option 2: Developer Installation (Requires Composer)
 
-### Address Validation
+1. Clone this repository to your WordPress plugins directory
+2. Navigate to the plugin directory:
+   ```
+   cd wp-content/plugins/gravity-forms-validator
+   ```
+3. Install dependencies using Composer:
+   ```
+   composer install --no-dev --optimize-autoloader
+   ```
+4. Activate the plugin in WordPress
 
-For address validation with geolocation suggestions, the Gravity Forms Geolocation plugin is required.
+## Updating
 
-## Contributing
+When updating the plugin:
 
-Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
+1. If you installed using Option 1 (with dependencies included), you can update through WordPress as usual
+2. If you installed using Option 2, after updating you may need to run `composer install` again to update dependencies
 
-## License
+## Requirements
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+- WordPress 5.0 or higher
+- Gravity Forms 2.4 or higher
+- PHP 7.1 or higher
+- Composer (for developer installation only)
 
-## Changelog
+## Development
 
-### 1.0.1
-- Update phone validator to support international-selector format and dynamic country code initialization.
+### Release Process
 
-### 1.0.0
-- Initial release.
+This plugin uses GitHub releases for updates. To create a new release:
+
+1. Update the version number in `gravity-forms-validator.php`
+2. Create and push a new tag:
+   ```
+   git tag v1.0.3
+   git push origin v1.0.3
+   ```
+3. GitHub Actions will automatically build the plugin with and without dependencies and create a release
+
+### Composer Dependencies
+
+This plugin uses the following Composer dependencies:
+
+- [brick/phonenumber](https://github.com/brick/phonenumber): For advanced phone number validation
