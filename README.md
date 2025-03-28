@@ -55,8 +55,8 @@ This plugin uses GitHub releases for updates. To create a new release:
 1. Update the version number in `gravity-forms-validator.php`
 2. Create and push a new tag:
    ```
-   git tag v1.0.2
-   git push origin v1.0.2
+   git tag v1.0.3
+   git push origin v1.0.3
    ```
 3. GitHub Actions will automatically build the plugin with and without dependencies and create a release
 

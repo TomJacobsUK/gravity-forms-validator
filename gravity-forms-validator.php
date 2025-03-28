@@ -3,7 +3,7 @@
  * Plugin Name: Gravity Forms Validator
  * Plugin URI: https://tomjacobs.co.uk
  * Description: A plugin to extend and improve Gravity Forms validation.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: TomJacobsUK
  * Author URI: https://github.com/TomJacobsUK
  * License: GPL-2.0+
